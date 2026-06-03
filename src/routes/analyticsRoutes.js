@@ -4,6 +4,8 @@ import {
   getStudentAnalytics,
   getCompanyAnalytics,
   getApplicationAnalytics,
+  getDepartmentAnalytics,
+  getPlacementAnalytics,
 } from "../controllers/analyticsController.js";
 
 const router = express.Router();
@@ -21,6 +23,16 @@ router.get(
 router.get(
   "/applications",
   getApplicationAnalytics
+);
+
+router.get(
+  "/departments",
+  getDepartmentAnalytics
+);
+
+router.get(
+  "/placements",
+  getPlacementAnalytics
 );
 
 export default router;

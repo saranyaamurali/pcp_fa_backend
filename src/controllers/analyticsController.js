@@ -100,3 +100,74 @@ export const getApplicationAnalytics =
       });
     }
   };
+
+export const getDepartmentAnalytics =
+  async (req, res) => {
+    try {
+      const departments =
+        await Student.aggregate([
+          {
+            $group: {
+              _id: "$department",
+              count: {
+                $sum: 1,
+              },
+            },
+          },
+        ]);
+
+      res.status(200).json({
+        success: true,
+        message:
+          "Department analytics fetched successfully",
+        data: departments,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message:
+          error.message,
+      });
+    }
+  };
+
+export const getPlacementAnalytics =
+  async (req, res) => {
+    try {
+      const totalApplications =
+        await Application.countDocuments();
+
+      const selected =
+        await Application.countDocuments({
+          status: "selected",
+        });
+
+      const rejected =
+        await Application.countDocuments({
+          status: "rejected",
+        });
+
+      const pending =
+        await Application.countDocuments({
+          status: "pending",
+        });
+
+      res.status(200).json({
+        success: true,
+        message:
+          "Placement analytics fetched successfully",
+        data: {
+          totalApplications,
+          selected,
+          rejected,
+          pending,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message:
+          error.message,
+      });
+    }
+  };

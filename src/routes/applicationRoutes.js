@@ -3,19 +3,21 @@ import express from "express";
 import {
   getApplications,
   getApplicationById,
+  createApplication,
+  updateApplication,
+  deleteApplication,
 } from "../controllers/applicationController.js";
 
-const router =
-  express.Router();
+const router = express.Router();
 
-router.get(
-  "/",
-  getApplications
-);
+router.post("/", createApplication);
 
-router.get(
-  "/:id",
-  getApplicationById
-);
+router.get("/", getApplications);
+
+router.get("/:id", getApplicationById);
+
+router.patch("/:id", updateApplication);
+
+router.delete("/:id", deleteApplication);
 
 export default router;
