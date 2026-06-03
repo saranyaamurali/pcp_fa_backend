@@ -1,5 +1,12 @@
 import Interview from "../models/Interview.js";
 import Application from "../models/Application.js";
+import mongoose from "mongoose";
+
+const getQuery = (idParam) => {
+  return mongoose.Types.ObjectId.isValid(idParam)
+    ? { $or: [{ _id: idParam }, { interviewId: idParam }] }
+    : { interviewId: idParam };
+};
 
 // GET ALL INTERVIEWS
 export const getInterviews = async (req, res) => {
@@ -40,7 +47,7 @@ export const getInterviews = async (req, res) => {
 // GET INTERVIEW BY ID
 export const getInterviewById = async (req, res) => {
   try {
-    const interview = await Interview.findById(req.params.id).populate({
+    const interview = await Interview.findOne(getQuery(req.params.id)).populate({
       path: "application",
       populate: [
         { path: "student" },
@@ -128,7 +135,7 @@ export const updateInterview = async (req, res) => {
       });
     }
 
-    const interview = await Interview.findById(req.params.id).populate(
+    const interview = await Interview.findOne(getQuery(req.params.id)).populate(
       "application"
     );
 
@@ -150,8 +157,8 @@ export const updateInterview = async (req, res) => {
       });
     }
 
-    const updatedInterview = await Interview.findByIdAndUpdate(
-      req.params.id,
+    const updatedInterview = await Interview.findOneAndUpdate(
+      getQuery(req.params.id),
       { result, feedback, status },
       { new: true, runValidators: true }
     ).populate({
@@ -178,7 +185,7 @@ export const updateInterview = async (req, res) => {
 // DELETE INTERVIEW
 export const deleteInterview = async (req, res) => {
   try {
-    const interview = await Interview.findByIdAndDelete(req.params.id);
+    const interview = await Interview.findOneAndDelete(getQuery(req.params.id));
 
     if (!interview) {
       return res.status(404).json({

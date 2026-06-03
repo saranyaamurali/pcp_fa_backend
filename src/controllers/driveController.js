@@ -1,5 +1,12 @@
 import Drive from "../models/Drive.js";
 import Company from "../models/Company.js";
+import mongoose from "mongoose";
+
+const getQuery = (idParam) => {
+  return mongoose.Types.ObjectId.isValid(idParam)
+    ? { $or: [{ _id: idParam }, { driveId: idParam }] }
+    : { driveId: idParam };
+};
 
 export const getDrives = async (
   req,
@@ -57,10 +64,7 @@ export const getDrives = async (
 export const getDriveById =
   async (req, res) => {
     try {
-      const drive =
-        await Drive.findById(
-          req.params.id
-        ).populate("company");
+      const drive = await Drive.findOne(getQuery(req.params.id)).populate("company");
 
       if (!drive) {
         return res.status(404).json({
@@ -111,15 +115,14 @@ export const createDrive =
 export const updateDrive =
   async (req, res) => {
     try {
-      const drive =
-        await Drive.findByIdAndUpdate(
-          req.params.id,
-          req.body,
-          {
-            new: true,
-            runValidators: true,
-          }
-        );
+      const drive = await Drive.findOneAndUpdate(
+        getQuery(req.params.id),
+        req.body,
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
 
       if (!drive) {
         return res.status(404).json({
@@ -147,10 +150,7 @@ export const updateDrive =
 export const deleteDrive =
   async (req, res) => {
     try {
-      const drive =
-        await Drive.findByIdAndDelete(
-          req.params.id
-        );
+      const drive = await Drive.findOneAndDelete(getQuery(req.params.id));
 
       if (!drive) {
         return res.status(404).json({

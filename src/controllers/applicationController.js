@@ -2,6 +2,13 @@ import Application from "../models/Application.js";
 import Student from "../models/Student.js";
 import Company from "../models/Company.js";
 import Drive from "../models/Drive.js";
+import mongoose from "mongoose";
+
+const getQuery = (idParam) => {
+  return mongoose.Types.ObjectId.isValid(idParam)
+    ? { $or: [{ _id: idParam }, { applicationId: idParam }] }
+    : { applicationId: idParam };
+};
 
 export const getApplications =
   async (req, res) => {
@@ -73,21 +80,18 @@ export const getApplications =
 export const getApplicationById =
   async (req, res) => {
     try {
-      const application =
-        await Application.findById(
-          req.params.id
-        )
-          .populate({
-            path: "student",
-            select: "studentId name email department cgpa skills graduationYear phone status",
-          })
-          .populate({
-            path: "drive",
-            populate: {
-              path: "company",
-              select: "companyId name role package eligibleDepartments minimumCgpa driveDate status",
-            },
-          });
+      const application = await Application.findOne(getQuery(req.params.id))
+        .populate({
+          path: "student",
+          select: "studentId name email department cgpa skills graduationYear phone status",
+        })
+        .populate({
+          path: "drive",
+          populate: {
+            path: "company",
+            select: "companyId name role package eligibleDepartments minimumCgpa driveDate status",
+          },
+        });
 
       if (!application) {
         return res.status(404).json({
@@ -138,15 +142,14 @@ export const createApplication =
 export const updateApplication =
   async (req, res) => {
     try {
-      const application =
-        await Application.findByIdAndUpdate(
-          req.params.id,
-          req.body,
-          {
-            new: true,
-            runValidators: true,
-          }
-        );
+      const application = await Application.findOneAndUpdate(
+        getQuery(req.params.id),
+        req.body,
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
 
       if (!application) {
         return res.status(404).json({
@@ -174,10 +177,7 @@ export const updateApplication =
 export const deleteApplication =
   async (req, res) => {
     try {
-      const application =
-        await Application.findByIdAndDelete(
-          req.params.id
-        );
+      const application = await Application.findOneAndDelete(getQuery(req.params.id));
 
       if (!application) {
         return res.status(404).json({

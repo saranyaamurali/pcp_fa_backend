@@ -1,4 +1,11 @@
 import Company from "../models/Company.js";
+import mongoose from "mongoose";
+
+const getQuery = (idParam) => {
+  return mongoose.Types.ObjectId.isValid(idParam)
+    ? { $or: [{ _id: idParam }, { companyId: idParam }] }
+    : { companyId: idParam };
+};
 
 export const getCompanies = async (req, res) => {
   try {
@@ -30,8 +37,7 @@ export const getCompanies = async (req, res) => {
 
 export const getCompanyById = async (req, res) => {
   try {
-    const company =
-      await Company.findById(req.params.id);
+    const company = await Company.findOne(getQuery(req.params.id));
 
     if (!company) {
       return res.status(404).json({
@@ -79,15 +85,14 @@ export const updateCompany = async (
   res
 ) => {
   try {
-    const company =
-      await Company.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
+    const company = await Company.findOneAndUpdate(
+      getQuery(req.params.id),
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     if (!company) {
       return res.status(404).json({
@@ -114,10 +119,7 @@ export const deleteCompany = async (
   res
 ) => {
   try {
-    const company =
-      await Company.findByIdAndDelete(
-        req.params.id
-      );
+    const company = await Company.findOneAndDelete(getQuery(req.params.id));
 
     if (!company) {
       return res.status(404).json({

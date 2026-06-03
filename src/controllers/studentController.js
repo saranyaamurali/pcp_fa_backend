@@ -1,4 +1,11 @@
 import Student from "../models/Student.js";
+import mongoose from "mongoose";
+
+const getQuery = (idParam) => {
+  return mongoose.Types.ObjectId.isValid(idParam)
+    ? { $or: [{ _id: idParam }, { studentId: idParam }] }
+    : { studentId: idParam };
+};
 
 // GET ALL STUDENTS + PAGINATION
 export const getStudents = async (
@@ -64,10 +71,7 @@ export const getStudents = async (
 export const getStudentById =
   async (req, res) => {
     try {
-      const student =
-        await Student.findById(
-          req.params.id
-        );
+      const student = await Student.findOne(getQuery(req.params.id));
 
       if (!student) {
         return res.status(404).json({
@@ -194,15 +198,14 @@ export const createStudent =
 export const updateStudent =
   async (req, res) => {
     try {
-      const student =
-        await Student.findByIdAndUpdate(
-          req.params.id,
-          req.body,
-          {
-            new: true,
-            runValidators: true,
-          }
-        );
+      const student = await Student.findOneAndUpdate(
+        getQuery(req.params.id),
+        req.body,
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
 
       if (!student) {
         return res.status(404).json({
@@ -231,10 +234,7 @@ export const updateStudent =
 export const deleteStudent =
   async (req, res) => {
     try {
-      const student =
-        await Student.findByIdAndDelete(
-          req.params.id
-        );
+      const student = await Student.findOneAndDelete(getQuery(req.params.id));
 
       if (!student) {
         return res.status(404).json({
