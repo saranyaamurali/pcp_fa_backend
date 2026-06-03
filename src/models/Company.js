@@ -4,18 +4,30 @@ const companySchema = new mongoose.Schema(
   {
     companyId: {
       type: String,
+      required: true,
       unique: true,
+    },
+
+    name: {
+      type: String,
       required: true,
     },
-    name: String,
+
     role: String,
+
     package: Number,
+
     eligibleDepartments: [String],
+
     minimumCgpa: Number,
+
     driveDate: String,
+
     status: String,
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 export default mongoose.model(

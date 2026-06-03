@@ -4,18 +4,27 @@ const driveSchema = new mongoose.Schema(
   {
     driveId: {
       type: String,
-      unique: true,
       required: true,
+      unique: true,
     },
+
     companyId: String,
+
     title: String,
+
     mode: String,
+
     location: String,
+
     registrationDeadline: String,
+
     rounds: [String],
+
     status: String,
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 export default mongoose.model(

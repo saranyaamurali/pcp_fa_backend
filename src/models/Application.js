@@ -5,16 +5,23 @@ const applicationSchema =
     {
       applicationId: {
         type: String,
-        unique: true,
         required: true,
+        unique: true,
       },
+
       studentId: String,
+
       driveId: String,
+
       appliedAt: String,
+
       currentRound: String,
+
       status: String,
     },
-    { timestamps: true }
+    {
+      timestamps: true,
+    }
   );
 
 export default mongoose.model(

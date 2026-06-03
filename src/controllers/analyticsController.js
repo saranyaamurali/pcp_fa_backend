@@ -1,6 +1,8 @@
 import Student from "../models/Student.js";
+import Company from "../models/Company.js";
+import Application from "../models/Application.js";
 
-export const getAnalytics =
+export const getStudentAnalytics =
   async (req, res) => {
     try {
       const totalStudents =
@@ -18,10 +20,76 @@ export const getAnalytics =
 
       res.status(200).json({
         success: true,
+        message:
+          "Student analytics fetched successfully",
         data: {
           totalStudents,
           activeStudents,
           inactiveStudents,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message:
+          error.message,
+      });
+    }
+  };
+
+export const getCompanyAnalytics =
+  async (req, res) => {
+    try {
+      const totalCompanies =
+        await Company.countDocuments();
+
+      const activeCompanies =
+        await Company.countDocuments({
+          status: "active",
+        });
+
+      res.status(200).json({
+        success: true,
+        message:
+          "Company analytics fetched successfully",
+        data: {
+          totalCompanies,
+          activeCompanies,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message:
+          error.message,
+      });
+    }
+  };
+
+export const getApplicationAnalytics =
+  async (req, res) => {
+    try {
+      const totalApplications =
+        await Application.countDocuments();
+
+      const selected =
+        await Application.countDocuments({
+          status: "selected",
+        });
+
+      const rejected =
+        await Application.countDocuments({
+          status: "rejected",
+        });
+
+      res.status(200).json({
+        success: true,
+        message:
+          "Application analytics fetched successfully",
+        data: {
+          totalApplications,
+          selected,
+          rejected,
         },
       });
     } catch (error) {
