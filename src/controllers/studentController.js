@@ -15,11 +15,26 @@ export const getStudents = async (
     const skip =
       (page - 1) * limit;
 
+    const { department, cgpaMin, status } = req.query;
+    let query = {};
+
+    if (department) {
+      query.department = department;
+    }
+
+    if (cgpaMin) {
+      query.cgpa = { $gte: Number(cgpaMin) };
+    }
+
+    if (status) {
+      query.status = status;
+    }
+
     const total =
-      await Student.countDocuments();
+      await Student.countDocuments(query);
 
     const students =
-      await Student.find()
+      await Student.find(query)
         .skip(skip)
         .limit(limit);
 

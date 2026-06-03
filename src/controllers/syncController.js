@@ -116,6 +116,12 @@ export const syncData = async (req, res) => {
         continue;
       }
 
+      // Link company ref
+      const companyDoc = await Company.findOne({ companyId: cleanDrive.companyId });
+      if (companyDoc) {
+        cleanDrive.company = companyDoc._id;
+      }
+
       await Drive.create(
         cleanDrive
       );
@@ -153,6 +159,12 @@ export const syncData = async (req, res) => {
         continue;
       }
 
+      // Link student and drive refs
+      const studentDoc = await Student.findOne({ studentId: cleanApplication.studentId });
+      const driveDoc = await Drive.findOne({ driveId: cleanApplication.driveId });
+      if (studentDoc) cleanApplication.student = studentDoc._id;
+      if (driveDoc) cleanApplication.drive = driveDoc._id;
+
       await Application.create(
         cleanApplication
       );
@@ -160,13 +172,20 @@ export const syncData = async (req, res) => {
       inserted++;
     }
 
+    const students = await Student.countDocuments();
+    const companies = await Company.countDocuments();
+    const drives = await Drive.countDocuments();
+    const applications = await Application.countDocuments();
+
     res.status(200).json({
       success: true,
-      message:
-        "Dataset synchronized successfully",
-      inserted,
-      duplicates,
-      rejected,
+      message: "Database synced successfully",
+      data: {
+        students,
+        companies,
+        drives,
+        applications,
+      },
     });
   } catch (error) {
     res.status(500).json({

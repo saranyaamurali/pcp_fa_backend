@@ -8,14 +8,19 @@ export const getHealth =
 
       res.status(200).json({
         success: true,
-        database: "connected",
-        documentCount: count,
+        message: "Database connected successfully",
+        data: {
+          database: "connected",
+          documentCount: count,
+        },
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        database:
-          "disconnected",
+        message: "Database disconnected",
+        data: {
+          database: "disconnected",
+        },
       });
     }
   };

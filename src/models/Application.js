@@ -10,8 +10,16 @@ const applicationSchema =
       },
 
       studentId: String,
+      student: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Student",
+      },
 
       driveId: String,
+      drive: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Drive",
+      },
 
       appliedAt: String,
 

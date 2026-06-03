@@ -10,14 +10,16 @@ import companyRoutes from "./routes/companyRoutes.js";
 import driveRoutes from "./routes/driveRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import interviewRoutes from "./routes/interviewRoutes.js";
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({
-    message: "API is running",
+  res.status(200).json({
+    success: true,
+    message: "Placement Recruitment API Running",
   });
 });
 
@@ -29,5 +31,6 @@ app.use("/api/students",studentRoutes);
 app.use("/api/companies",companyRoutes);
 app.use("/api/drives",driveRoutes);
 app.use("/api/applications",applicationRoutes);
+app.use("/api/interviews",interviewRoutes);
 app.use("/api/auth",authRoutes);
 export default app;

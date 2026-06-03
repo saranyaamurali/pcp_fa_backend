@@ -61,7 +61,7 @@ export const register = async (
       message:
         "User registered successfully",
       data: {
-        id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -120,7 +120,14 @@ export const login = async (
           .status(200)
           .json({
             success: true,
-            token,
+            message: "Login successful",
+            data: {
+              token,
+              _id: user._id,
+              name: user.name,
+              email: user.email,
+              role: user.role,
+            },
           });
       }
     }
@@ -158,7 +165,14 @@ export const login = async (
         .status(200)
         .json({
           success: true,
-          token,
+          message: "Login successful",
+          data: {
+            token,
+            _id: student._id,
+            name: student.name,
+            email: student.email,
+            role: "student",
+          },
         });
     }
 
@@ -180,8 +194,30 @@ export const me = async (
   req,
   res
 ) => {
-  res.status(200).json({
-    success: true,
-    user: req.user,
-  });
+  try {
+    let dbUser;
+    if (req.user.role === "student") {
+      dbUser = await Student.findById(req.user.id);
+    } else {
+      dbUser = await User.findById(req.user.id).select("-password");
+    }
+
+    if (!dbUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Authenticated user fetched successfully",
+      data: dbUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

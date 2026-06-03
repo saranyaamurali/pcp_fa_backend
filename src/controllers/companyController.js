@@ -2,12 +2,22 @@ import Company from "../models/Company.js";
 
 export const getCompanies = async (req, res) => {
   try {
-    const companies = await Company.find();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const total = await Company.countDocuments();
+    const companies = await Company.find()
+      .skip(skip)
+      .limit(limit);
 
     res.status(200).json({
       success: true,
       message: "Companies fetched successfully",
-      total: companies.length,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
       data: companies,
     });
   } catch (error) {

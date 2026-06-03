@@ -10,6 +10,11 @@ const driveSchema = new mongoose.Schema(
 
     companyId: String,
 
+    company: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Company",
+    },
+
     title: String,
 
     mode: String,
